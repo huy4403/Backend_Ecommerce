@@ -1,0 +1,21 @@
+spring:
+  #devtool config
+  devtools:
+    livereload:
+      enabled: true
+
+  #Set up multipart request
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 50MB
+
+#api prefix
+api:
+  prefix: /api/v1
+
+#Jwt
+jwt:
+  secretKey: U2VjcmV0S2V5Rm9ySldUU2lnbmluZ0Vjb21BcHBEb2FuVmFuaHV5=
+  expiration: 86400000

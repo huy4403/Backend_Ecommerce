@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: Backend_Ecommerce
+  config:
+    import:
+      - classpath:database-config.yml
+      - classpath:mailSender-config.yml
+      - classpath:other-config.yml
+      - classpath:payment-config.yml
