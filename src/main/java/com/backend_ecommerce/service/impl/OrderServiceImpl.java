@@ -18,7 +18,7 @@ import com.backend_ecommerce.request.CreatePaymentRequest;
 import com.backend_ecommerce.response.CreateOrderResponse;
 import com.backend_ecommerce.service.OrderItemService;
 import com.backend_ecommerce.service.OrderService;
-import com.backend_ecommerce.service.PaymentOrderService;
+import com.backend_ecommerce.service.TransactionService;
 import com.backend_ecommerce.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -39,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
     private final AddressRepository addressRepository;
     private final OrderItemService orderItemService;
     private final PaymentService paymentService;
-    private final PaymentOrderService paymentOrderService;
+    private final TransactionService transactionService;
 
     @Override
     @Transactional
@@ -116,7 +116,7 @@ public class OrderServiceImpl implements OrderService {
                 .paymentMethod(req.getPaymentMethod())
                 .build();
 
-        paymentOrderService.createPaymentOrder(req.getPaymentMethod(), currentUser, savedOrder);
+        transactionService.createTranaction(req.getPaymentMethod(), currentUser, savedOrder);
 
         if (req.getPaymentMethod().equals(PaymentMethod.DIRECT)) {
             return createOrderResponse;

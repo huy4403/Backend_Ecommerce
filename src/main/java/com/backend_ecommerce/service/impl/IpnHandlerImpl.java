@@ -2,7 +2,7 @@ package com.backend_ecommerce.service.impl;
 
 import com.backend_ecommerce.constant.PaymentIpnResponseConst;
 import com.backend_ecommerce.domain.OrderStatus;
-import com.backend_ecommerce.domain.PaymentOrderStatus;
+import com.backend_ecommerce.domain.TransactionStatus;
 import com.backend_ecommerce.domain.PaymentStatus;
 import com.backend_ecommerce.model.Order;
 import com.backend_ecommerce.model.OrderItem;
@@ -26,7 +26,7 @@ public class IpnHandlerImpl implements IpnHandler {
     private final PaymentService paymentService;
     private final OrderService orderService;
     private final OrderRepository orderRepository;
-    private final PaymentOrderService paymentOrderService;
+    private final TransactionService transactionService;
     private final ProductVariantService productVariantService;
 
     @Override
@@ -61,19 +61,19 @@ public class IpnHandlerImpl implements IpnHandler {
                 try {
                     Long receivedAmount = Long.parseLong(receivedAmountStr);
                     if (!receivedAmount.equals(order.getTotalPrice() * 100L)) {
-                        paymentOrderService.updateStatus(orderId, PaymentOrderStatus.FAILED);
+                        transactionService.updateStatus(orderId, TransactionStatus.FAILED);
                         orderService.updatePaymentStatus(orderId, PaymentStatus.FAILED);
                         orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED);
                         return PaymentIpnResponseConst.INVALID_AMOUNT;
                     }
                 } catch (NumberFormatException e) {
-                    paymentOrderService.updateStatus(orderId, PaymentOrderStatus.FAILED);
+                    transactionService.updateStatus(orderId, TransactionStatus.FAILED);
                     orderService.updatePaymentStatus(orderId, PaymentStatus.FAILED);
                     orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED);
                     return PaymentIpnResponseConst.INVALID_AMOUNT;
                 }
 
-                paymentOrderService.updateStatus(orderId, PaymentOrderStatus.SUCCESS);
+                transactionService.updateStatus(orderId, TransactionStatus.SUCCESS);
                 orderService.updatePaymentStatus(orderId, PaymentStatus.COMPLETED);
 
                 //Update product variant quantity
@@ -90,14 +90,14 @@ public class IpnHandlerImpl implements IpnHandler {
                 return PaymentIpnResponseConst.SUCCESS;
 
             } else {
-                paymentOrderService.updateStatus(orderId, PaymentOrderStatus.FAILED);
+                transactionService.updateStatus(orderId, TransactionStatus.FAILED);
                 orderService.updatePaymentStatus(orderId, PaymentStatus.FAILED);
                 orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED);
                 return PaymentIpnResponseConst.TRANSACTION_FAILED;
             }
         }
         catch (Exception e) {
-            paymentOrderService.updateStatus(orderId, PaymentOrderStatus.FAILED);
+            transactionService.updateStatus(orderId, TransactionStatus.FAILED);
             orderService.updatePaymentStatus(orderId, PaymentStatus.FAILED);
             orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED);
             return PaymentIpnResponseConst.TRANSACTION_FAILED;

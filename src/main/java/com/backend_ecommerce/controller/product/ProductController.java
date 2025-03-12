@@ -16,7 +16,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @GetMapping("get-all")
+    @GetMapping
     public ResponseEntity<?> getAllProduct(@ModelAttribute ProductHomeRequest request) {
         ProductHomeResponse products = productService.getAllProduct(request);
         return ApiResponse.ok("All products", products);

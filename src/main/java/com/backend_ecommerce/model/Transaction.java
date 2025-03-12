@@ -1,7 +1,7 @@
 package com.backend_ecommerce.model;
 
 import com.backend_ecommerce.domain.PaymentMethod;
-import com.backend_ecommerce.domain.PaymentOrderStatus;
+import com.backend_ecommerce.domain.TransactionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,14 +12,14 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class PaymentOrder {
+public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private PaymentOrderStatus status = PaymentOrderStatus.PENDING;
+    private TransactionStatus status = TransactionStatus.PENDING;
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
