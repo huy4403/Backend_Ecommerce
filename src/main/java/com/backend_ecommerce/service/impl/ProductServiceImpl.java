@@ -1,11 +1,14 @@
 package com.backend_ecommerce.service.impl;
 
+import com.backend_ecommerce.domain.OrderStatus;
 import com.backend_ecommerce.domain.ProductStatus;
+import com.backend_ecommerce.dto.UserPrincipal;
 import com.backend_ecommerce.exception.ProductException;
 import com.backend_ecommerce.exception.ResourceNotFoundException;
 import com.backend_ecommerce.model.Category;
 import com.backend_ecommerce.model.Product;
 import com.backend_ecommerce.repository.CategoryRepository;
+import com.backend_ecommerce.repository.OrderItemRepository;
 import com.backend_ecommerce.repository.ProductRepository;
 import com.backend_ecommerce.request.CreateProductRequest;
 import com.backend_ecommerce.request.ProductHomeRequest;
@@ -21,6 +24,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,12 +42,14 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
 
     private final CloudinaryService cloudinaryService;
+    private final OrderItemRepository orderItemRepository;
 
     @Override
     public CreateProductResponse createProduct(CreateProductRequest req) {
 
         Product prepareProduct = new Product();
         prepareProduct.setTitle(req.getTitle());
+        prepareProduct.setImportPrice(req.getImportPrice());
         prepareProduct.setPrice(req.getPrice());
         prepareProduct.setDescription(req.getDescription());
 
@@ -91,12 +98,28 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDisplayResponse getProductById(Long id) {
+
         Product product = productRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Product not found with id: " + id)
         );
+
         if(product.getStatus() == ProductStatus.INACTIVE)
             throw new ProductException("Product is inactive");
-        return ProductDisplayResponse.mapFromProduct(product);
+        ProductDisplayResponse productDisplayResponse = ProductDisplayResponse.mapFromProduct(product);
+
+        UserPrincipal userPrincipal;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            if(orderItemRepository.existsByProductIdAndUserIdAndDelivered(product.getId(),
+                    userPrincipal.user().getId(),
+                    OrderStatus.DELIVERED))
+                productDisplayResponse.setBought(true);
+        } catch (Exception e) {
+            productDisplayResponse.setBought(false);
+        }
+
+        return productDisplayResponse;
     }
 
     @Override
@@ -123,6 +146,7 @@ public class ProductServiceImpl implements ProductService {
         );
 
         existProduct.setTitle(req.getTitle());
+        existProduct.setImportPrice(req.getImportPrice());
         existProduct.setPrice(req.getPrice());
         existProduct.setCategory(categoryForProduct);
         existProduct.setDescription(req.getDescription());

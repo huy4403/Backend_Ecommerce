@@ -6,7 +6,7 @@ import com.backend_ecommerce.model.Order;
 import com.backend_ecommerce.model.User;
 
 public interface TransactionService {
-    Long createTranaction(PaymentMethod paymentMethod, User user, Order order);
+    Long createTransaction(PaymentMethod paymentMethod, User user, Order order);
 
     void updateStatus(Long orderId, TransactionStatus transactionStatus);
 }

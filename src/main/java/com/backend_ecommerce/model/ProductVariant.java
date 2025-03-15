@@ -26,6 +26,7 @@ public class ProductVariant {
     @JoinTable(name = "product_variant_attribute_values",
             joinColumns = @JoinColumn(name = "product_variant_id"),
             inverseJoinColumns = @JoinColumn(name = "attribute_value_id"))
+    @Builder.Default
     private List<AttributeValue> attributeValues = new ArrayList<>();
 
     private int quantity;

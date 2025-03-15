@@ -28,4 +28,6 @@ public class CartItem extends BaseEntity {
 
     private int quantity;
 
+    private Long userId;
+
 }

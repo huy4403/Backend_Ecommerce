@@ -20,6 +20,8 @@ public class ProductDisplayResponse {
     private List<String> images;
     private List<AttributeResponse> attributes;
     private List<ProductVariantResponse> variants;
+    @Builder.Default
+    private boolean bought = false;
 
     public static ProductDisplayResponse mapFromProduct(Product product) {
 

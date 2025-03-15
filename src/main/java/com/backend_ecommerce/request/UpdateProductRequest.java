@@ -12,6 +12,8 @@ public class UpdateProductRequest {
 
     private Long categoryId;
 
+    private Long importPrice;
+
     private Long price;
 
     private String description;

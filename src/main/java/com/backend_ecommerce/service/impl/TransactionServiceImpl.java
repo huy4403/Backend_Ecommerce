@@ -18,7 +18,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
 
     @Override
-    public Long createTranaction(PaymentMethod paymentMethod, User user, Order order) {
+    public Long createTransaction(PaymentMethod paymentMethod, User user, Order order) {
 
         Transaction transaction = Transaction
                 .builder()

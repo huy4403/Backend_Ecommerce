@@ -25,6 +25,8 @@ public class OrderItem {
     @ManyToOne
     private Product product;
 
+    private Long userId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductVariant productVariant;
 

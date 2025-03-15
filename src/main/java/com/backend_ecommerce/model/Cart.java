@@ -23,6 +23,7 @@ public class Cart {
     @JsonIgnore
     private User user;
 
+    @Builder.Default
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<CartItem> cartItems = new HashSet<>();
 

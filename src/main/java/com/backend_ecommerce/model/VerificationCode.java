@@ -24,5 +24,6 @@ public class VerificationCode {
     @Enumerated(EnumType.STRING)
     private TypeCode type;
 
+    @Builder.Default
     private LocalDateTime expiryDate = LocalDateTime.now();
 }

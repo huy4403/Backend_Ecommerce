@@ -39,7 +39,7 @@ public class CartItemServiceImpl implements CartItemService {
             throw new ProductException("Product not active");
         }
 
-        Cart currentUserCart = cartRepository.findByUserId(userPrincipal.user().getId());
+        Cart currentUserCart = userPrincipal.user().getCart();
 
         CartItem existCartItem = cartItemRepository.findByCartIdAndProductVariantId(
                 currentUserCart.getId(), req.getProductVariantId());
@@ -53,6 +53,7 @@ public class CartItemServiceImpl implements CartItemService {
         cartItem.setCart(currentUserCart);
         cartItem.setProductVariant(productVariant);
         cartItem.setQuantity(req.getQuantity());
+        cartItem.setUserId(userPrincipal.user().getId());
         return cartItemRepository.save(cartItem).getId();
 
     }
@@ -63,7 +64,7 @@ public class CartItemServiceImpl implements CartItemService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
 
-        Long currentUserCartId = cartRepository.findByUserId(userPrincipal.user().getId()).getId();
+        Long currentUserCartId = userPrincipal.user().getCart().getId();
 
         CartItem existCartItem = cartItemRepository.findByIdAndCartId(id, currentUserCartId).orElseThrow(
                 () -> new ResourceNotFoundException("Cart item not found in your cart")
@@ -80,7 +81,7 @@ public class CartItemServiceImpl implements CartItemService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
 
-        Long currentUserCartId = cartRepository.findByUserId(userPrincipal.user().getId()).getId();
+        Long currentUserCartId = userPrincipal.user().getCart().getId();
 
         if(!cartItemRepository.existsByIdAndCartId(id, currentUserCartId))
             throw new ResourceNotFoundException("Cart item not found in your cart");

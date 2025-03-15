@@ -24,6 +24,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         orderItem.setProduct(cartItem.getProductVariant().getProduct());
         orderItem.setProductVariant(cartItem.getProductVariant());
         orderItem.setQuantity(cartItem.getQuantity());
+        orderItem.setUserId(cartItem.getUserId());
         orderItem.setPrice(cartItem.getProductVariant().getProduct().getPrice());
 
         try {

@@ -11,7 +11,6 @@ import com.backend_ecommerce.exception.ResourceNotFoundException;
 import com.backend_ecommerce.model.*;
 import com.backend_ecommerce.repository.AddressRepository;
 import com.backend_ecommerce.repository.CartItemRepository;
-import com.backend_ecommerce.repository.CartRepository;
 import com.backend_ecommerce.repository.OrderRepository;
 import com.backend_ecommerce.request.CreateOrderRequest;
 import com.backend_ecommerce.request.CreatePaymentRequest;
@@ -34,7 +33,6 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final AddressRepository addressRepository;
     private final OrderItemService orderItemService;
@@ -50,7 +48,7 @@ public class OrderServiceImpl implements OrderService {
 
         User currentUser = userPrincipal.user();
 
-        Long cartId = cartRepository.findByUserId(currentUser.getId()).getId();
+        Long cartId = userPrincipal.user().getCart().getId();
 
         //Check cart item corresponding to the user
         if (cartId == null) throw new ResourceNotFoundException("Cart not found");
@@ -116,7 +114,7 @@ public class OrderServiceImpl implements OrderService {
                 .paymentMethod(req.getPaymentMethod())
                 .build();
 
-        transactionService.createTranaction(req.getPaymentMethod(), currentUser, savedOrder);
+        transactionService.createTransaction(req.getPaymentMethod(), currentUser, savedOrder);
 
         if (req.getPaymentMethod().equals(PaymentMethod.DIRECT)) {
             return createOrderResponse;

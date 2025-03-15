@@ -60,6 +60,7 @@ public class GlobalExceptionHandler {
             BusinessException.class,
             OrderException.class,
             PaymentException.class,
+            ReviewException.class,
     })
     public ResponseEntity<ErrorDetailsResponse> userExceptionHandler(Exception ue, WebRequest req){
         return ApiResponse.badRequest(ue.getMessage(), req.getDescription(false));

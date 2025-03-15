@@ -30,11 +30,14 @@ public class Product extends BaseEntity{
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 
+    private Long importPrice;
+
     private Long price;
 
     private String description;
 
     @ElementCollection
+    @Builder.Default
     private List<String> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -44,6 +47,10 @@ public class Product extends BaseEntity{
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<ProductVariant> variants;
+
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Review> reviews;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
