@@ -4,8 +4,10 @@ import com.backend_ecommerce.exception.CategoryException;
 import com.backend_ecommerce.exception.ResourceNotFoundException;
 import com.backend_ecommerce.model.Category;
 import com.backend_ecommerce.repository.CategoryRepository;
+import com.backend_ecommerce.request.CategoryRequest;
 import com.backend_ecommerce.request.CreateAndUpdateCategoryRequest;
 import com.backend_ecommerce.response.CategoryDetailsResponse;
+import com.backend_ecommerce.response.CategoryResponse;
 import com.backend_ecommerce.response.CategoryReviewResponse;
 import com.backend_ecommerce.response.CreateAndUpdateCategoryResponse;
 import com.backend_ecommerce.service.CategoryService;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -113,13 +116,10 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Category not found with id: " + id)
         );
-        Category parentCategory = categoryRepository.findById(category.getParentId()).orElseThrow(
-                () -> new ResourceNotFoundException("Parent id not found")
-        );
         return CategoryReviewResponse
                 .builder()
                 .name(category.getName())
-                .parentCategory(parentCategory.getName())
+                .parentId(category.getParentId())
                 .build();
     }
 
@@ -161,5 +161,11 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         return rootCategories;
+    }
+
+    @Override
+    public List<CategoryResponse> getAll(CategoryRequest req) {
+        List<Category> categories = categoryRepository.findAllAndIdNot(req.getId());
+        return categories.stream().map(CategoryResponse::mapFrom).collect(Collectors.toList());
     }
 }

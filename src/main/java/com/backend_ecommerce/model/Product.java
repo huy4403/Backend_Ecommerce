@@ -36,6 +36,8 @@ public class Product extends BaseEntity{
 
     private String description;
 
+    private String brand;
+
     @ElementCollection
     @Builder.Default
     private List<String> images = new ArrayList<>();

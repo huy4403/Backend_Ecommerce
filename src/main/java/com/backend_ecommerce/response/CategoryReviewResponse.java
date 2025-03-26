@@ -11,5 +11,5 @@ public class CategoryReviewResponse {
 
     private String name;
 
-    private String parentCategory;
+    private Long parentId;
 }

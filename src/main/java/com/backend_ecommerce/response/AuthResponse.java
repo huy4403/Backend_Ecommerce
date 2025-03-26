@@ -16,7 +16,7 @@ public class AuthResponse {
 
     private String avatar;
 
-    private String jwt;
+    private String token;
 
     private ROLE_NAME role;
 }

@@ -57,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
         User user = User.builder()
                 .fullName(req.getFullName())
                 .email(req.getEmail())
+                .mobile(req.getMobile())
                 .password(passwordEncoder.encode(req.getPassword()))
                 .role(ROLE_NAME.USER)
                 .build();
@@ -131,7 +132,7 @@ public class AuthServiceImpl implements AuthService {
                 .builder()
                 .fullName(user.user().getFullName())
                 .avatar(avatarUrl)
-                .jwt(jwtToken)
+                .token(jwtToken)
                 .role(user.user().getRole())
                 .build();
     }

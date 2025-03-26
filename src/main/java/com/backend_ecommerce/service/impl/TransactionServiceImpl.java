@@ -25,6 +25,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .paymentMethod(paymentMethod)
                 .user(user)
                 .order(order)
+                .amount(order.getTotalPrice())
                 .build();
         return transactionRepository.save(transaction).getId();
     }

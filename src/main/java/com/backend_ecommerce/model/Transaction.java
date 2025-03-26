@@ -12,7 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class Transaction {
+public class Transaction extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,6 +26,8 @@ public class Transaction {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    private Long amount;
 
     @OneToOne(fetch = FetchType.LAZY)
     private Order order;

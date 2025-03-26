@@ -1,7 +1,9 @@
 package com.backend_ecommerce.service;
 
+import com.backend_ecommerce.request.CategoryRequest;
 import com.backend_ecommerce.request.CreateAndUpdateCategoryRequest;
 import com.backend_ecommerce.response.CategoryDetailsResponse;
+import com.backend_ecommerce.response.CategoryResponse;
 import com.backend_ecommerce.response.CategoryReviewResponse;
 import com.backend_ecommerce.response.CreateAndUpdateCategoryResponse;
 
@@ -17,4 +19,6 @@ public interface CategoryService {
     CategoryReviewResponse getCategoryById(Long id);
 
     List<CategoryDetailsResponse> getAllCategory();
+
+    List<CategoryResponse> getAll(CategoryRequest req);
 }

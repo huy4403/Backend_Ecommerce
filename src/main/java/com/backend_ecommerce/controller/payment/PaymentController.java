@@ -19,7 +19,6 @@ public class PaymentController {
 
     private final IpnHandler ipnHandler;
 
-
     //Return url
     @GetMapping("{id}/status")
     public ResponseEntity<Void> callBack(@PathVariable("id") Long id,
@@ -40,7 +39,6 @@ public class PaymentController {
         response.sendRedirect(redirectUrl);
         return ResponseEntity.ok().build();
     }
-
 
     //Ipn url
     @GetMapping("/ipn")

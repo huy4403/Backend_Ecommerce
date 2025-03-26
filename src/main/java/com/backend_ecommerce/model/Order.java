@@ -5,6 +5,7 @@ import com.backend_ecommerce.domain.OrderStatus;
 import com.backend_ecommerce.domain.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,10 +48,18 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus=PaymentStatus.PENDING;
 
+    @OneToOne(mappedBy = "order", optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Transaction transaction;
+
     @Builder.Default
     private LocalDateTime orderDate = LocalDateTime.now();
 
     @Builder.Default
     private LocalDateTime deliverDate = LocalDateTime.now().plusDays(7);
+
+    @UpdateTimestamp
+    @Column(name = "updatedAt")
+    @JsonIgnore
+    private LocalDateTime updatedAt;
 
 }

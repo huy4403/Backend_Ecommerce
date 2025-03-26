@@ -15,6 +15,7 @@ import com.backend_ecommerce.repository.OrderRepository;
 import com.backend_ecommerce.request.CreateOrderRequest;
 import com.backend_ecommerce.request.CreatePaymentRequest;
 import com.backend_ecommerce.response.CreateOrderResponse;
+import com.backend_ecommerce.response.OrderResponse;
 import com.backend_ecommerce.service.OrderItemService;
 import com.backend_ecommerce.service.OrderService;
 import com.backend_ecommerce.service.TransactionService;
@@ -27,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -151,5 +153,13 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(orderStatus);
 
         return orderRepository.save(order).getId();
+    }
+
+    @Override
+    public List<OrderResponse> getAll() {
+        List<Order> orders = orderRepository.findAll();
+        return orders.stream()
+                .map(OrderResponse::mapFrom)
+                .collect(Collectors.toList());
     }
 }

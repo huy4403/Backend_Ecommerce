@@ -1,5 +1,6 @@
 package com.backend_ecommerce.model;
 
+import com.backend_ecommerce.domain.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProductVariant {
+public class ProductVariant extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,4 +31,8 @@ public class ProductVariant {
     private List<AttributeValue> attributeValues = new ArrayList<>();
 
     private int quantity;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status = ProductStatus.ACTIVE;
 }

@@ -1,9 +1,11 @@
 package com.backend_ecommerce.controller.product;
 
-import com.backend_ecommerce.request.CreateProductRequest;
-import com.backend_ecommerce.request.UpdateProductRequest;
+import com.backend_ecommerce.request.ProductManagementRequest;
+import com.backend_ecommerce.request.ProductFormRequest;
 import com.backend_ecommerce.response.ApiResponse;
 import com.backend_ecommerce.response.CreateProductResponse;
+import com.backend_ecommerce.response.ProductFillFormResponse;
+import com.backend_ecommerce.response.ProductManagementResponse;
 import com.backend_ecommerce.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +19,14 @@ public class AdminProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<?> createProduct(@ModelAttribute CreateProductRequest req) {
+    public ResponseEntity<?> createProduct(@ModelAttribute ProductFormRequest req) {
         CreateProductResponse productResponse = productService.createProduct(req);
         return ApiResponse.created("Create product successfully", productResponse);
     }
 
     @PutMapping("{id}")
     public ResponseEntity<?> updateProduct(@PathVariable("id") Long id,
-                                           @RequestBody UpdateProductRequest req) {
+                                           @ModelAttribute ProductFormRequest req) {
         Long productId = productService.updateProduct(id, req);
         return ApiResponse.accepted("Update product successfully", productId);
     }
@@ -39,5 +41,17 @@ public class AdminProductController {
     public ResponseEntity<?> activeProduct(@PathVariable Long id) {
         Long productId = productService.openActiveProduct(id);
         return ApiResponse.accepted("product open active successfully", productId);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllProducts(@ModelAttribute ProductManagementRequest req) {
+        ProductManagementResponse response = productService.getProductManagement(req);
+        return ApiResponse.ok("Call api successfully",response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProduct(@PathVariable Long id) {
+        ProductFillFormResponse product = productService.findProductById(id);
+        return ApiResponse.ok("Product overview", product);
     }
 }

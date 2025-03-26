@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CartItemServiceImpl implements CartItemService {
 
-    private final CartRepository cartRepository;
     private final ProductVariantRepository productVariantRepository;
     private final CartItemRepository cartItemRepository;
 

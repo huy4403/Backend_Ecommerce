@@ -10,13 +10,10 @@ import com.backend_ecommerce.model.Product;
 import com.backend_ecommerce.repository.CategoryRepository;
 import com.backend_ecommerce.repository.OrderItemRepository;
 import com.backend_ecommerce.repository.ProductRepository;
-import com.backend_ecommerce.request.CreateProductRequest;
 import com.backend_ecommerce.request.ProductHomeRequest;
-import com.backend_ecommerce.request.UpdateProductRequest;
-import com.backend_ecommerce.response.CreateProductResponse;
-import com.backend_ecommerce.response.ProductDisplayResponse;
-import com.backend_ecommerce.response.ProductElementResponse;
-import com.backend_ecommerce.response.ProductHomeResponse;
+import com.backend_ecommerce.request.ProductManagementRequest;
+import com.backend_ecommerce.request.ProductFormRequest;
+import com.backend_ecommerce.response.*;
 import com.backend_ecommerce.service.CloudinaryService;
 import com.backend_ecommerce.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -42,16 +39,18 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
 
     private final CloudinaryService cloudinaryService;
+
     private final OrderItemRepository orderItemRepository;
 
     @Override
-    public CreateProductResponse createProduct(CreateProductRequest req) {
+    public CreateProductResponse createProduct(ProductFormRequest req) {
 
         Product prepareProduct = new Product();
         prepareProduct.setTitle(req.getTitle());
         prepareProduct.setImportPrice(req.getImportPrice());
         prepareProduct.setPrice(req.getPrice());
         prepareProduct.setDescription(req.getDescription());
+        prepareProduct.setBrand(req.getBrand());
 
         Category categoryForProduct = categoryRepository.findById(req.getCategoryId()).orElseThrow(
                 () -> new ResourceNotFoundException("Category not found with id: " + req.getCategoryId())
@@ -77,11 +76,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductHomeResponse getAllProduct(ProductHomeRequest req) {
         Pageable pageable = PageRequest.of(
-                req.getPage(),
+                req.getPage() - 1,
                 req.getLimit(),
                 Sort.unsorted());
         Page<Product> result = productRepository.filterProduct(req.getTitle(),
-                req.getCategoryId(),
+                req.getCategoryName(),
                 req.getMinPrice(),
                 req.getMaxPrice(),
                 ProductStatus.ACTIVE,
@@ -136,7 +135,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Long updateProduct(Long id, UpdateProductRequest req) {
+    public Long updateProduct(Long id, ProductFormRequest req) {
 
         Product existProduct = productRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Product not found with id: " + id)
@@ -150,7 +149,18 @@ public class ProductServiceImpl implements ProductService {
         existProduct.setPrice(req.getPrice());
         existProduct.setCategory(categoryForProduct);
         existProduct.setDescription(req.getDescription());
+        existProduct.setBrand(req.getBrand());
 
+        if (!req.getFiles().isEmpty()) {
+
+            List<String> images = existProduct.getImages();
+
+            for (MultipartFile file : req.getFiles()) {
+                String source = cloudinaryService.uploadImage(file);
+                images.add(source);
+            }
+            existProduct.setImages(images);
+        }
         return productRepository.save(existProduct).getId();
     }
 
@@ -165,5 +175,34 @@ public class ProductServiceImpl implements ProductService {
         } catch (Exception e) {
             throw new ProductException("Something went wrong while open active product");
         }
+    }
+
+    @Override
+    public ProductManagementResponse getProductManagement(ProductManagementRequest req) {
+        Pageable pageable = PageRequest.of(
+                req.getPage() - 1,
+                req.getLimit(),
+                Sort.unsorted());
+        Page<Product> result = productRepository.findProductManagement(req.getTitle(),
+                req.getCategory(),
+                req.getMinPrice(),
+                req.getMaxPrice(),
+                pageable
+        );
+
+        return ProductManagementResponse
+                .builder()
+                .products(result.getContent().stream().map(ProductForManagementResponse::mapFrom).collect(Collectors.toList()))
+                .count(result.getTotalElements())
+                .page(result.getTotalPages())
+                .build();
+    }
+
+    @Override
+    public ProductFillFormResponse findProductById(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Product not found with id: " + id)
+        );
+        return ProductFillFormResponse.mapFrom(product);
     }
 }

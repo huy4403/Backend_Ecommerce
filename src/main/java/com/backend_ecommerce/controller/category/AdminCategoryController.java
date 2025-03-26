@@ -1,13 +1,17 @@
 package com.backend_ecommerce.controller.category;
 
+import com.backend_ecommerce.request.CategoryRequest;
 import com.backend_ecommerce.request.CreateAndUpdateCategoryRequest;
 import com.backend_ecommerce.response.ApiResponse;
+import com.backend_ecommerce.response.CategoryResponse;
 import com.backend_ecommerce.response.CategoryReviewResponse;
 import com.backend_ecommerce.response.CreateAndUpdateCategoryResponse;
 import com.backend_ecommerce.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,5 +42,11 @@ public class AdminCategoryController {
     public ResponseEntity<?> getCategoryById(@PathVariable("id") Long id) {
         CategoryReviewResponse categoryReviewResponse = categoryService.getCategoryById(id);
         return ApiResponse.ok("Category details", categoryReviewResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllCategories(@ModelAttribute CategoryRequest req) {
+        List<CategoryResponse> categories = categoryService.getAll(req);
+        return ApiResponse.ok("Category details", categories);
     }
 }

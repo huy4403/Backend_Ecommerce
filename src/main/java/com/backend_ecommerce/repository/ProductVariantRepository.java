@@ -32,9 +32,9 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
             @Param("size") Integer size);
 
     @Query("SELECT EXISTS (SELECT pv FROM ProductVariant pv " +
-            "JOIN pv.attributeValues av " +
+            "LEFT JOIN pv.attributeValues av " +
             "WHERE pv.product.id = :productId " +
-            "AND av.value IN :attributeValues " +
+            "AND (av.value IN :attributeValues OR (:size = 0 AND av.id IS NULL)) " +
             "GROUP BY pv.id " +
             "HAVING COUNT(av.id) = :size)")
     boolean existsByProductAndAttributeValues(

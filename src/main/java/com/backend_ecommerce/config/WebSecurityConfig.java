@@ -65,7 +65,7 @@ public class WebSecurityConfig {
     private CorsConfigurationSource corsConfigurationSource() {
         return request -> {
             CorsConfiguration cfg = new CorsConfiguration();
-            cfg.setAllowedOrigins(Collections.singletonList("*"));
+            cfg.setAllowedOriginPatterns(Collections.singletonList("*"));
             cfg.setAllowedMethods(Collections.singletonList("*"));
             cfg.setAllowCredentials(true);
             cfg.setAllowedHeaders(Collections.singletonList("*"));

@@ -20,7 +20,9 @@ public class AuthValidation {
         if(!req.getPassword().equals(req.getRePassword()))
             errors.add("Passwords do not match");
         if(userRepo.existsByEmail(req.getEmail()))
-            errors.add("Email address already in use");
+            errors.add("Email đã được dùng để đăng ký tài khoản khác");
+        if(req.getMobile() != null && userRepo.existsByMobile(req.getMobile()))
+            errors.add("Số điện thoại đã được dùng để đăng ký tài khoản khác");
         if(!errors.isEmpty())
             throw new ValidationException("Sign up failed", errors);
     }

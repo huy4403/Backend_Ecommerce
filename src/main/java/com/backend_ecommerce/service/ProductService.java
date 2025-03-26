@@ -1,15 +1,13 @@
 package com.backend_ecommerce.service;
 
-import com.backend_ecommerce.request.CreateProductRequest;
 import com.backend_ecommerce.request.ProductHomeRequest;
-import com.backend_ecommerce.request.UpdateProductRequest;
-import com.backend_ecommerce.response.CreateProductResponse;
-import com.backend_ecommerce.response.ProductDisplayResponse;
-import com.backend_ecommerce.response.ProductHomeResponse;
+import com.backend_ecommerce.request.ProductManagementRequest;
+import com.backend_ecommerce.request.ProductFormRequest;
+import com.backend_ecommerce.response.*;
 
 public interface ProductService {
 
-    CreateProductResponse createProduct(CreateProductRequest req);
+    CreateProductResponse createProduct(ProductFormRequest req);
 
     ProductHomeResponse getAllProduct(ProductHomeRequest req);
 
@@ -17,7 +15,11 @@ public interface ProductService {
 
     void deleteById(Long id);
 
-    Long updateProduct(Long id, UpdateProductRequest req);
+    Long updateProduct(Long id, ProductFormRequest req);
 
     Long openActiveProduct(Long id);
+
+    ProductManagementResponse getProductManagement(ProductManagementRequest req);
+
+    ProductFillFormResponse findProductById(Long id);
 }

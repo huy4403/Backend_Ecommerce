@@ -1,5 +1,6 @@
 package com.backend_ecommerce.response;
 
+import com.backend_ecommerce.domain.ProductStatus;
 import com.backend_ecommerce.model.Product;
 import lombok.*;
 
@@ -17,6 +18,7 @@ public class ProductDisplayResponse {
     private String title;
     private String description;
     private Long price;
+    private String brand;
     private List<String> images;
     private List<AttributeResponse> attributes;
     private List<ProductVariantResponse> variants;
@@ -31,12 +33,15 @@ public class ProductDisplayResponse {
         productDisplayResponse.setDescription(product.getDescription());
         productDisplayResponse.setPrice(product.getPrice());
         productDisplayResponse.setImages(product.getImages());
+        productDisplayResponse.setBrand(product.getBrand());
 
         productDisplayResponse.setAttributes(
                 product.getAttributes().stream().map(AttributeResponse::mapFromAttribute).collect(Collectors.toList())
         );
 
-        productDisplayResponse.setVariants(product.getVariants().stream().map(ProductVariantResponse::mapFromProduct)
+        productDisplayResponse.setVariants(product.getVariants().stream()
+                .filter(variant -> variant.getStatus() == ProductStatus.ACTIVE)
+                .map(ProductVariantResponse::mapFromProduct)
                 .collect(Collectors.toList()));
 
         return productDisplayResponse;

@@ -1,6 +1,7 @@
 package com.backend_ecommerce.service.impl;
 
 import com.backend_ecommerce.domain.AccountStatus;
+import com.backend_ecommerce.domain.ROLE_NAME;
 import com.backend_ecommerce.dto.UserPrincipal;
 import com.backend_ecommerce.exception.UserException;
 import com.backend_ecommerce.model.Avatar;
@@ -9,6 +10,7 @@ import com.backend_ecommerce.repository.AvatarRepository;
 import com.backend_ecommerce.repository.UserRepository;
 import com.backend_ecommerce.request.UpdatePasswordRequest;
 import com.backend_ecommerce.request.UpdateUserRequest;
+import com.backend_ecommerce.response.AllUserResponse;
 import com.backend_ecommerce.response.ProfileUserResponse;
 import com.backend_ecommerce.service.CloudinaryService;
 import com.backend_ecommerce.service.UserService;
@@ -20,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -142,6 +146,14 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new UserException("Something went wrong");
         }
+    }
+
+    @Override
+    public List<AllUserResponse> getAllUer() {
+        List<User> users = userRepository.findAllByRoleNot(ROLE_NAME.ADMIN);
+        return users.stream()
+                .map(AllUserResponse::mapFrom)
+                .collect(Collectors.toList());
     }
 
 }

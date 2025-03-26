@@ -5,11 +5,14 @@ import com.backend_ecommerce.request.CreateProductVariantRequest;
 import com.backend_ecommerce.request.FindProductVariantRequest;
 import com.backend_ecommerce.request.UpdateProductVariantRequest;
 import com.backend_ecommerce.response.ApiResponse;
+import com.backend_ecommerce.response.VariantResponse;
 import com.backend_ecommerce.service.ProductVariantService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,10 +27,16 @@ public class AdminProductVariantController {
         return ApiResponse.created("Successfully created a product variant.", productVariantId);
     }
 
-    @GetMapping
+    @GetMapping("get")
     public ResponseEntity<?> getProductVariant(@RequestBody FindProductVariantRequest req) {
         ProductVariant productVariant = productVariantService.findByAttribute(req);
         return ApiResponse.ok("Product variant", productVariant);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAllProductVariant(@PathVariable("id") Long id) {
+        List<VariantResponse> productVariants = productVariantService.getAllVariantById(id);
+        return ApiResponse.ok("All variant by product id: " +id, productVariants);
     }
 
     @PutMapping("{id}")
@@ -41,5 +50,11 @@ public class AdminProductVariantController {
     public ResponseEntity<?> deleteProductVariant(@PathVariable("id") Long id) {
         productVariantService.deleteById(id);
         return ApiResponse.noContent("Success to delete");
+    }
+
+    @PutMapping("{id}/active")
+    public ResponseEntity<?> activeProductVariant(@PathVariable("id") Long id) {
+        productVariantService.activeProductVariant(id);
+        return ApiResponse.accepted("Product variant activated");
     }
 }

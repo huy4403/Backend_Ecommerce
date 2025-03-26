@@ -9,5 +9,6 @@ import lombok.*;
 @Builder
 public class CartItemRequest {
     private Long productVariantId;
-    private Integer quantity;
+    @Builder.Default
+    private Integer quantity = 1;
 }

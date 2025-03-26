@@ -1,8 +1,6 @@
 package com.backend_ecommerce.request;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -12,8 +10,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class CreateProductRequest {
-
+@Builder
+public class ProductFormRequest {
     private String title;
 
     private Long categoryId;
@@ -24,5 +22,9 @@ public class CreateProductRequest {
 
     private String description;
 
+    private String brand;
+
     private List<MultipartFile> files = new ArrayList<>();
+
+
 }
