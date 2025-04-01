@@ -2,13 +2,13 @@ package com.backend_ecommerce.service.impl;
 
 import com.backend_ecommerce.domain.ProductStatus;
 import com.backend_ecommerce.dto.UserPrincipal;
+import com.backend_ecommerce.exception.CartException;
 import com.backend_ecommerce.exception.ProductException;
 import com.backend_ecommerce.exception.ResourceNotFoundException;
 import com.backend_ecommerce.model.Cart;
 import com.backend_ecommerce.model.CartItem;
 import com.backend_ecommerce.model.ProductVariant;
 import com.backend_ecommerce.repository.CartItemRepository;
-import com.backend_ecommerce.repository.CartRepository;
 import com.backend_ecommerce.repository.ProductVariantRepository;
 import com.backend_ecommerce.request.CartItemRequest;
 import com.backend_ecommerce.request.UpdateCartItemRequest;
@@ -44,8 +44,7 @@ public class CartItemServiceImpl implements CartItemService {
                 currentUserCart.getId(), req.getProductVariantId());
 
         if(existCartItem != null) {
-            existCartItem.setQuantity(existCartItem.getQuantity() + req.getQuantity());
-            return cartItemRepository.save(existCartItem).getId();
+            throw new CartException("Sản phẩm đã có trong giỏ hàng");
         }
 
         CartItem cartItem = new CartItem();
@@ -87,5 +86,13 @@ public class CartItemServiceImpl implements CartItemService {
 
         cartItemRepository.deleteById(id);
 
+    }
+
+    @Override
+    public Long getCartCount() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
+
+        return cartItemRepository.countCartItemsByUserId(userPrincipal.user().getId());
     }
 }

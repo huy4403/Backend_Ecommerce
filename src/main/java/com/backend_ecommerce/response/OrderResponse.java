@@ -2,7 +2,7 @@ package com.backend_ecommerce.response;
 
 import com.backend_ecommerce.domain.OrderStatus;
 import com.backend_ecommerce.domain.PaymentMethod;
-import com.backend_ecommerce.domain.PaymentStatus;
+import com.backend_ecommerce.domain.TransactionStatus;
 import com.backend_ecommerce.model.Order;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
@@ -21,7 +21,7 @@ public class OrderResponse {
 
     private Long total;
 
-    private PaymentStatus paymentStatus;
+    private TransactionStatus status;
 
     private PaymentMethod paymentMethod;
 
@@ -36,7 +36,7 @@ public class OrderResponse {
                 .id(order.getId())
                 .customer(order.getUser().getFullName())
                 .total(order.getTotalPrice())
-                .paymentStatus(order.getPaymentStatus())
+                .status(order.getTransaction().getStatus())
                 .orderDate(order.getOrderDate())
                 .paymentMethod(order.getTransaction().getPaymentMethod())
                 .orderStatus(order.getOrderStatus())

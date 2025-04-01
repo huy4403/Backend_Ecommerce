@@ -7,6 +7,7 @@ import com.backend_ecommerce.model.Order;
 import com.backend_ecommerce.model.Transaction;
 import com.backend_ecommerce.model.User;
 import com.backend_ecommerce.repository.TransactionRepository;
+import com.backend_ecommerce.request.UpdateTransactionStatusRequest;
 import com.backend_ecommerce.service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

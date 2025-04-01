@@ -14,7 +14,7 @@ public class ImageFileValidator implements ConstraintValidator<ImageFile, Object
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
-    private static final List<String> ALLOWED_TYPES = Arrays.asList("image/jpeg", "image/png", "image/gif", "image/webp");
+    private static final List<String> ALLOWED_TYPES = Arrays.asList("image/jpeg", "image/png", "image/gif", "image/webp, image/svg");
 
     @Override
     public boolean isValid(Object data, ConstraintValidatorContext context) {

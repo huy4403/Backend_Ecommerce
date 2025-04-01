@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
@@ -35,4 +37,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                                 @Param("minPrice") Integer minPrice,
                                 @Param("maxPrice") Integer maxPrice,
                                 Pageable pageable);
+
+    List<Product> findTop4ByOrderByCreatedAtDesc();
+
+    @Query("SELECT p FROM Product p LEFT JOIN p.reviews r GROUP BY p.id ORDER BY COALESCE(AVG(r.rating), 0) DESC")
+    Page<Product> findTopRatedProducts(Pageable pageable);
 }

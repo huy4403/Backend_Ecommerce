@@ -25,6 +25,12 @@ public class CartController {
         return ApiResponse.ok("Your cart:", cartResponse);
     }
 
+    @GetMapping("count")
+    public ResponseEntity<?> getUserCartCount() {
+        Long cartCount = cartItemService.getCartCount();
+        return ApiResponse.ok("Your cart item count:", cartCount);
+    }
+
     @PostMapping
     public ResponseEntity<?> addItemToCart(@RequestBody CartItemRequest req) {
         Long cartItemId = cartItemService.addItemToCart(req);

@@ -30,6 +30,8 @@ public class OrderItem extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductVariant productVariant;
 
+    private Long importPrice;
+
     private int quantity;
 
     private Long price;

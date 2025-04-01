@@ -16,8 +16,8 @@ public class ReviewRequest {
 
     private double rating;
 
-    private String reviewText;
+    private String comment;
 
-    private List<MultipartFile> productImages;
+    private List<MultipartFile> reviewImages;
 
 }

@@ -26,6 +26,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         orderItem.setQuantity(cartItem.getQuantity());
         orderItem.setUserId(cartItem.getUserId());
         orderItem.setPrice(cartItem.getProductVariant().getProduct().getPrice());
+        orderItem.setImportPrice(cartItem.getProductVariant().getProduct().getImportPrice());
 
         try {
             Long orderItemId = orderItemRepository.save(orderItem).getId();

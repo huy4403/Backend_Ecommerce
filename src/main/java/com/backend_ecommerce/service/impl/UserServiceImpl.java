@@ -85,10 +85,10 @@ public class UserServiceImpl implements UserService {
         User existUser = userRepository.findById(userPrincipal.user().getId()).orElseThrow(() -> new UserException("User does not exist"));
 
 
-        if(!passwordEncoder.matches(req.getOldPassword(), existUser.getPassword()))
-            throw new UserException("Old password does not match");
+        if(!passwordEncoder.matches(req.getCurrentPassword(), existUser.getPassword()))
+            throw new UserException("Current password does not match");
 
-        if(!req.getNewPassword().equals(req.getRePassword()))
+        if(!req.getNewPassword().equals(req.getConfirmPassword()))
             throw new UserException("New password does not match");
 
         existUser.setPassword(passwordEncoder.encode(req.getNewPassword()));

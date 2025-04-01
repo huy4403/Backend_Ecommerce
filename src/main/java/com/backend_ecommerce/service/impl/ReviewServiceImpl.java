@@ -50,7 +50,7 @@ public class ReviewServiceImpl implements ReviewService {
             throw new ResourceNotFoundException("You do not permission to add this review");
 
 
-        List<String> productImages = Optional.ofNullable(req.getProductImages())
+        List<String> reviewImages = Optional.ofNullable(req.getReviewImages())
                 .filter(list -> !list.isEmpty())
                 .map(list -> list.stream().map(uploadImage::uploadImage)
                         .collect(Collectors.toList()))
@@ -61,8 +61,8 @@ public class ReviewServiceImpl implements ReviewService {
                 .builder()
                 .name(userPrincipal.user().getFullName())
                 .rating(req.getRating())
-                .reviewText(req.getReviewText())
-                .productImages(productImages)
+                .reviewText(req.getComment())
+                .reviewImages(reviewImages)
                 .product(product)
                 .user(userPrincipal.user())
                 .build();
@@ -74,11 +74,11 @@ public class ReviewServiceImpl implements ReviewService {
     public List<ReviewResponse> getReviews(Long id, int page, int limit) {
 
         Pageable pageable = PageRequest.of(
-                page,
+                page - 1,
                 limit,
                 Sort.unsorted());
 
-        Page<Review> result = reviewRepository.findAll(pageable);
+        Page<Review> result = reviewRepository.findAllByProductId(id, pageable);
 
         return result.getContent().stream().map(
                 ReviewResponse::mapFromReview

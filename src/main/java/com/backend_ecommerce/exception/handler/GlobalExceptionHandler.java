@@ -116,7 +116,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<?> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e, WebRequest req) {
         log.error(e.getMessage(), e);
-        return ApiResponse.badRequest("Can't send files/folders larger than 20MB", req.getDescription(false));
+        return ApiResponse.badRequest("Dung lượng tối đa 20MB", req.getDescription(false));
     }
 
     //Handler another exception

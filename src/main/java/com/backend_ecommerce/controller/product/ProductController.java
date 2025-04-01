@@ -1,10 +1,7 @@
 package com.backend_ecommerce.controller.product;
 
 import com.backend_ecommerce.request.ProductHomeRequest;
-import com.backend_ecommerce.response.ApiResponse;
-import com.backend_ecommerce.response.ProductDisplayResponse;
-import com.backend_ecommerce.response.ProductHomeResponse;
-import com.backend_ecommerce.response.ReviewResponse;
+import com.backend_ecommerce.response.*;
 import com.backend_ecommerce.service.ProductService;
 import com.backend_ecommerce.service.ReviewService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +22,18 @@ public class ProductController {
     public ResponseEntity<?> getAllProduct(@ModelAttribute ProductHomeRequest request) {
         ProductHomeResponse products = productService.getAllProduct(request);
         return ApiResponse.ok("All products", products);
+    }
+
+    @GetMapping("get-new")
+    public ResponseEntity<?> getNewProduct() {
+        List<ProductNewResponse> products = productService.getNewProduct();
+        return ApiResponse.ok("New product", products);
+    }
+
+    @GetMapping("featured")
+    public ResponseEntity<?> getAllProduct() {
+        List<FeaturedProductsResponse> products = productService.getFeatured();
+        return ApiResponse.ok("Featured", products);
     }
 
     @GetMapping("{id}")

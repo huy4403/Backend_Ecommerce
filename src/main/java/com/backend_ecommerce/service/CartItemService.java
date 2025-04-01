@@ -9,4 +9,6 @@ public interface CartItemService {
     Long updateCartItem(Long id, UpdateCartItemRequest req);
 
     void removeCartItem(Long id);
+
+    Long getCartCount();
 }

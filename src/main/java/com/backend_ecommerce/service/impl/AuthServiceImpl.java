@@ -142,7 +142,7 @@ public class AuthServiceImpl implements AuthService {
     public String generateSigningOtpCode(SentOtpRequest req) throws MessagingException {
 
         if(!userRepo.existsByEmail(req.getEmail()))
-            throw new UsernameNotFoundException("User not found with email: " + req.getEmail());
+            throw new UsernameNotFoundException("User not found with email");
 
         if(!userRepo.existsByEmailAndAccountStatus(req.getEmail(), AccountStatus.ACTIVE))
             throw new DisabledException("Your account has been banned.");
@@ -165,7 +165,7 @@ public class AuthServiceImpl implements AuthService {
     public String generateResetPasswordOtpCode(SentOtpRequest req) throws MessagingException {
 
         if(!userRepo.existsByEmail(req.getEmail()))
-            throw new UsernameNotFoundException("User not found with email: " + req.getEmail());
+            throw new UsernameNotFoundException("User not found with email");
 
         if(!userRepo.existsByEmailAndAccountStatus(req.getEmail(), AccountStatus.ACTIVE))
             throw new DisabledException("Your account has been banned.");

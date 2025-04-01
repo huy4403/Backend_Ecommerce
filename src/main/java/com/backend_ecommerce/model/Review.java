@@ -29,7 +29,7 @@ public class Review extends BaseEntity {
     private String reviewText;
 
     @ElementCollection
-    private List<String> productImages;
+    private List<String> reviewImages;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

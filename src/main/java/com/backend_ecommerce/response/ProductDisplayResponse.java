@@ -2,6 +2,7 @@ package com.backend_ecommerce.response;
 
 import com.backend_ecommerce.domain.ProductStatus;
 import com.backend_ecommerce.model.Product;
+import com.backend_ecommerce.model.Review;
 import lombok.*;
 
 import java.util.List;
@@ -16,6 +17,8 @@ import java.util.stream.Collectors;
 public class ProductDisplayResponse {
     private Long id;
     private String title;
+    private double rating;
+    private long reviews;
     private String description;
     private Long price;
     private String brand;
@@ -38,6 +41,15 @@ public class ProductDisplayResponse {
         productDisplayResponse.setAttributes(
                 product.getAttributes().stream().map(AttributeResponse::mapFromAttribute).collect(Collectors.toList())
         );
+
+        productDisplayResponse.setRating(
+                product.getReviews().stream()
+                        .mapToDouble(Review::getRating)
+                        .average()
+                        .orElse(0.0)
+        );
+
+        productDisplayResponse.setReviews(product.getReviews() != null ? (long) product.getReviews().size() : 0L);
 
         productDisplayResponse.setVariants(product.getVariants().stream()
                 .filter(variant -> variant.getStatus() == ProductStatus.ACTIVE)

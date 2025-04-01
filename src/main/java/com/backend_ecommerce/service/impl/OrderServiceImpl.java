@@ -2,20 +2,19 @@ package com.backend_ecommerce.service.impl;
 
 import com.backend_ecommerce.domain.OrderStatus;
 import com.backend_ecommerce.domain.PaymentMethod;
-import com.backend_ecommerce.domain.PaymentStatus;
 import com.backend_ecommerce.domain.ProductStatus;
 import com.backend_ecommerce.dto.UserPrincipal;
 import com.backend_ecommerce.exception.BusinessException;
 import com.backend_ecommerce.exception.ProductException;
 import com.backend_ecommerce.exception.ResourceNotFoundException;
 import com.backend_ecommerce.model.*;
-import com.backend_ecommerce.repository.AddressRepository;
-import com.backend_ecommerce.repository.CartItemRepository;
-import com.backend_ecommerce.repository.OrderRepository;
+import com.backend_ecommerce.repository.*;
 import com.backend_ecommerce.request.CreateOrderRequest;
 import com.backend_ecommerce.request.CreatePaymentRequest;
 import com.backend_ecommerce.response.CreateOrderResponse;
+import com.backend_ecommerce.response.OrderDetailResponse;
 import com.backend_ecommerce.response.OrderResponse;
+import com.backend_ecommerce.response.UserOrdersResponse;
 import com.backend_ecommerce.service.OrderItemService;
 import com.backend_ecommerce.service.OrderService;
 import com.backend_ecommerce.service.TransactionService;
@@ -40,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemService orderItemService;
     private final PaymentService paymentService;
     private final TransactionService transactionService;
+    private final ProductVariantRepository productVariantRepository;
 
     @Override
     @Transactional
@@ -118,7 +118,7 @@ public class OrderServiceImpl implements OrderService {
 
         transactionService.createTransaction(req.getPaymentMethod(), currentUser, savedOrder);
 
-        if (req.getPaymentMethod().equals(PaymentMethod.DIRECT)) {
+        if (req.getPaymentMethod().equals(PaymentMethod.COD)) {
             return createOrderResponse;
         }
 
@@ -134,24 +134,30 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updatePaymentStatus(Long id, PaymentStatus paymentStatus) {
-
-        Order order = orderRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Order not found")
-        );
-
-        order.setPaymentStatus(paymentStatus);
-
-        orderRepository.save(order);
-    }
-
-    @Override
+    @Transactional
     public Long updateOrderStatus(Long id, OrderStatus orderStatus) {
         Order order = orderRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Order not found")
         );
-        order.setOrderStatus(orderStatus);
 
+        OrderStatus oldStatus = order.getOrderStatus();
+
+        if(orderStatus.equals(OrderStatus.DELIVERED)) {
+            order.getOrderItems().forEach(orderItem -> {
+                ProductVariant product = orderItem.getProductVariant();
+                if(product.getQuantity() > orderItem.getQuantity()) {
+                    productVariantRepository.decreaseStock(product.getId(), orderItem.getQuantity());
+                } else {
+                    throw new IllegalArgumentException("Số lượng hàng không đủ để xác nhận đơn hàng!");
+                }
+            });
+        } else if(oldStatus.equals(OrderStatus.DELIVERED)) {
+                order.getOrderItems().forEach(orderItem -> {
+                    ProductVariant product = orderItem.getProductVariant();
+                    productVariantRepository.increaseStock(product.getId(), orderItem.getQuantity());
+                });
+        }
+        order.setOrderStatus(orderStatus);
         return orderRepository.save(order).getId();
     }
 
@@ -161,5 +167,32 @@ public class OrderServiceImpl implements OrderService {
         return orders.stream()
                 .map(OrderResponse::mapFrom)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public OrderDetailResponse getOrderById(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Order not found")
+        );
+        return OrderDetailResponse.mapFrom(order);
+    }
+
+    @Override
+    public OrderDetailResponse getCurrentOrderById(Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
+
+        Order order = orderRepository.findByIdAndUser(id, userPrincipal.user()).orElseThrow(
+                () -> new ResourceNotFoundException("Order not found")
+        );
+        return OrderDetailResponse.mapFrom(order);
+    }
+
+    @Override
+    public List<UserOrdersResponse> getUserOrders() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
+        List<Order> orders = orderRepository.findAllByUser(userPrincipal.user());
+        return orders.stream().map(UserOrdersResponse::mapFrom).collect(Collectors.toList());
     }
 }

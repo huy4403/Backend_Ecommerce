@@ -2,7 +2,6 @@ package com.backend_ecommerce.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.backend_ecommerce.domain.OrderStatus;
-import com.backend_ecommerce.domain.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -43,10 +42,6 @@ public class Order {
     private OrderStatus orderStatus = OrderStatus.PENDING;
 
     private int totalItem;
-
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    private PaymentStatus paymentStatus=PaymentStatus.PENDING;
 
     @OneToOne(mappedBy = "order", optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
     private Transaction transaction;

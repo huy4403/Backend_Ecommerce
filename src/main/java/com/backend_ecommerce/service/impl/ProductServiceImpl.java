@@ -51,6 +51,7 @@ public class ProductServiceImpl implements ProductService {
         prepareProduct.setPrice(req.getPrice());
         prepareProduct.setDescription(req.getDescription());
         prepareProduct.setBrand(req.getBrand());
+        prepareProduct.setStatus(ProductStatus.INACTIVE);
 
         Category categoryForProduct = categoryRepository.findById(req.getCategoryId()).orElseThrow(
                 () -> new ResourceNotFoundException("Category not found with id: " + req.getCategoryId())
@@ -204,5 +205,18 @@ public class ProductServiceImpl implements ProductService {
                 () -> new ResourceNotFoundException("Product not found with id: " + id)
         );
         return ProductFillFormResponse.mapFrom(product);
+    }
+
+    @Override
+    public List<ProductNewResponse> getNewProduct() {
+        List<Product> products = productRepository.findTop4ByOrderByCreatedAtDesc();
+        return products.stream().map(ProductNewResponse::mapFrom).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FeaturedProductsResponse> getFeatured() {
+        Page<Product> topProducts = productRepository.findTopRatedProducts(PageRequest.of(0, 8, Sort.unsorted()));
+        List<Product> products = topProducts.getContent();
+        return products.stream().map(FeaturedProductsResponse::mapFrom).collect(Collectors.toList());
     }
 }

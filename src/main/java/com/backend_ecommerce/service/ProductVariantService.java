@@ -20,4 +20,5 @@ public interface ProductVariantService {
     List<VariantResponse> getAllVariantById(Long id);
 
     void activeProductVariant(Long id);
+
 }

@@ -2,7 +2,9 @@ package com.backend_ecommerce.repository;
 
 import com.backend_ecommerce.model.AttributeValue;
 import com.backend_ecommerce.model.ProductVariant;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -41,4 +43,14 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
             @Param("productId") Long productId,
             @Param("attributeValues") List<String> attributeValues,
             @Param("size") Integer size);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ProductVariant p SET p.quantity = p.quantity - :quantity WHERE p.id = :id")
+    void decreaseStock(@Param("id") Long id, @Param("quantity") int quantity);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ProductVariant p SET p.quantity = p.quantity + :quantity WHERE p.id = :id")
+    void increaseStock(@Param("id") Long id, @Param("quantity") int quantity);
 }

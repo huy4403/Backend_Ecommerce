@@ -5,6 +5,8 @@ import com.backend_ecommerce.request.ProductManagementRequest;
 import com.backend_ecommerce.request.ProductFormRequest;
 import com.backend_ecommerce.response.*;
 
+import java.util.List;
+
 public interface ProductService {
 
     CreateProductResponse createProduct(ProductFormRequest req);
@@ -22,4 +24,8 @@ public interface ProductService {
     ProductManagementResponse getProductManagement(ProductManagementRequest req);
 
     ProductFillFormResponse findProductById(Long id);
+
+    List<ProductNewResponse> getNewProduct();
+
+    List<FeaturedProductsResponse> getFeatured();
 }

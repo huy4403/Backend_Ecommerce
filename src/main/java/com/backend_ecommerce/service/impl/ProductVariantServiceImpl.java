@@ -78,6 +78,10 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         ProductVariant productVariant = productVariantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product variant not exist"));
 
+        if(quantity < 0 && Math.abs(quantity) > productVariant.getQuantity()) {
+            throw new ProductException("Product variant quantity is less than or equal to zero");
+        }
+
         productVariant.setQuantity(productVariant.getQuantity() + quantity);
 
         return productVariantRepository.save(productVariant).getId();

@@ -3,7 +3,6 @@ package com.backend_ecommerce.service.impl;
 import com.backend_ecommerce.constant.PaymentIpnResponseConst;
 import com.backend_ecommerce.domain.OrderStatus;
 import com.backend_ecommerce.domain.TransactionStatus;
-import com.backend_ecommerce.domain.PaymentStatus;
 import com.backend_ecommerce.model.Order;
 import com.backend_ecommerce.model.OrderItem;
 import com.backend_ecommerce.repository.OrderRepository;
@@ -62,19 +61,16 @@ public class IpnHandlerImpl implements IpnHandler {
                     Long receivedAmount = Long.parseLong(receivedAmountStr);
                     if (!receivedAmount.equals(order.getTotalPrice() * 100L)) {
                         transactionService.updateStatus(orderId, TransactionStatus.FAILED);
-                        orderService.updatePaymentStatus(orderId, PaymentStatus.FAILED);
                         orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED);
                         return PaymentIpnResponseConst.INVALID_AMOUNT;
                     }
                 } catch (NumberFormatException e) {
                     transactionService.updateStatus(orderId, TransactionStatus.FAILED);
-                    orderService.updatePaymentStatus(orderId, PaymentStatus.FAILED);
                     orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED);
                     return PaymentIpnResponseConst.INVALID_AMOUNT;
                 }
 
                 transactionService.updateStatus(orderId, TransactionStatus.SUCCESS);
-                orderService.updatePaymentStatus(orderId, PaymentStatus.COMPLETED);
 
                 //Update product variant quantity
 
@@ -91,14 +87,12 @@ public class IpnHandlerImpl implements IpnHandler {
 
             } else {
                 transactionService.updateStatus(orderId, TransactionStatus.FAILED);
-                orderService.updatePaymentStatus(orderId, PaymentStatus.FAILED);
                 orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED);
                 return PaymentIpnResponseConst.TRANSACTION_FAILED;
             }
         }
         catch (Exception e) {
             transactionService.updateStatus(orderId, TransactionStatus.FAILED);
-            orderService.updatePaymentStatus(orderId, PaymentStatus.FAILED);
             orderService.updateOrderStatus(orderId, OrderStatus.CANCELLED);
             return PaymentIpnResponseConst.TRANSACTION_FAILED;
         }

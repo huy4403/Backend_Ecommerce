@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -38,15 +39,28 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             log.info("publicValue is: {}", publicValue);
             String extension = getFileName(filename)[1];
             log.info("extension is: {}", extension);
+
+            boolean isSvg = "svg".equals(extension);
+            if (isSvg) {
+                extension = "png";
+            }
+
             File fileUpload = convert(file);
             log.info("fileUpload is: {}", fileUpload);
+
             try {
-                cloudinary.uploader().upload(fileUpload, ObjectUtils.asMap("public_id", publicValue));
-            }finally {
+                Map<String, Object> options = new HashMap<>();
+                options.put("public_id", publicValue);
+                if (isSvg) {
+                    options.put("format", "png");
+                }
+                cloudinary.uploader().upload(fileUpload, options);
+            } finally {
                 cleanDisk(fileUpload);
             }
+
             return cloudinary.url().generate(StringUtils.join(publicValue, ".", extension));
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("Đã xảy ra lỗi khi upload ảnh");
         }
     }
@@ -69,7 +83,8 @@ public class CloudinaryServiceImpl implements CloudinaryService {
             log.info("Method covert");
             throw new IllegalArgumentException("Đã xảy ra lỗi khi up ảnh");
         }
-        File convFile = new File(StringUtils.join(generatePublicValue(file.getOriginalFilename()), getFileName(file.getOriginalFilename())[1]));
+        File convFile = new File(StringUtils.join(generatePublicValue(file.getOriginalFilename()),
+                getFileName(file.getOriginalFilename())[1]));
         try (InputStream is = file.getInputStream()) {
             Files.copy(is, convFile.toPath());
         }

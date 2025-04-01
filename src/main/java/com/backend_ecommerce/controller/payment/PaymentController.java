@@ -27,13 +27,9 @@ public class PaymentController {
         String redirectUrl;
 
         if ("00".equals(vnpResponseCode)) {
-//            paymentOrderService.updateStatus(id, PaymentOrderStatus.SUCCESS);
-//            orderService.updatePaymentStatus(id, PaymentStatus.COMPLETED);
-            redirectUrl = "http://127.0.0.1:5500/paymentResult.html?orderId=" + id + "&status=success";
+            redirectUrl = "http://localhost:5173/processing-checkout?orderId=" + id + "&status=success";
         } else {
-//            paymentOrderService.updateStatus(id, PaymentOrderStatus.FAILED);
-//            orderService.updatePaymentStatus(id, PaymentStatus.FAILED);
-            redirectUrl = "http://127.0.0.1:5500/paymentResult.html?orderId=" + id + "&status=failed";
+            redirectUrl = "http://localhost:5173/processing-checkout?orderId=" + id + "&status=failed";
         }
 
         response.sendRedirect(redirectUrl);
