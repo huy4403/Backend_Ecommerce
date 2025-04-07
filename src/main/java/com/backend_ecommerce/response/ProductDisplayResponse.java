@@ -25,6 +25,7 @@ public class ProductDisplayResponse {
     private List<String> images;
     private List<AttributeResponse> attributes;
     private List<ProductVariantResponse> variants;
+    private ProductStatus status;
     @Builder.Default
     private boolean bought = false;
 
@@ -55,6 +56,7 @@ public class ProductDisplayResponse {
                 .filter(variant -> variant.getStatus() == ProductStatus.ACTIVE)
                 .map(ProductVariantResponse::mapFromProduct)
                 .collect(Collectors.toList()));
+        productDisplayResponse.setStatus(product.getStatus());
 
         return productDisplayResponse;
     }

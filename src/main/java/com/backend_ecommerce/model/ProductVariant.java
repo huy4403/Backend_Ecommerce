@@ -24,7 +24,7 @@ public class ProductVariant extends BaseEntity {
     private Product product;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "product_variant_attribute_values",
+    @JoinTable(name = "variant_attr_values",
             joinColumns = @JoinColumn(name = "product_variant_id"),
             inverseJoinColumns = @JoinColumn(name = "attribute_value_id"))
     @Builder.Default

@@ -102,9 +102,6 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Product not found with id: " + id)
         );
-
-        if(product.getStatus() == ProductStatus.INACTIVE)
-            throw new ProductException("Product is inactive");
         ProductDisplayResponse productDisplayResponse = ProductDisplayResponse.mapFromProduct(product);
 
         UserPrincipal userPrincipal;

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class CartServiceImpl implements CartService {
 
     private final CartRepository cartRepository;
 
+    @Transactional
     @Override
     public Long createCart(User user) {
         Cart newCart = new Cart();

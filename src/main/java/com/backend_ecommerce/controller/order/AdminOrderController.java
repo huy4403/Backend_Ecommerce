@@ -21,7 +21,7 @@ public class AdminOrderController {
     private final TransactionService transactionService;
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateOrderStatus(@PathVariable Long id, @RequestBody UpdateOrderStatusRequest req) {
+    public ResponseEntity<?> updateOrderStatus(@PathVariable("id") Long id, @RequestBody UpdateOrderStatusRequest req) {
         Long orderId = orderService.updateOrderStatus(id, req.getOrderStatus());
         return ApiResponse.accepted("Update order status successfully", orderId);
     }

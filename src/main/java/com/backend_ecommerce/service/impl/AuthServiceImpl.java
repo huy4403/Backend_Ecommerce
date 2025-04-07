@@ -30,6 +30,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.Optional;
@@ -50,6 +51,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     //Sign up request
+    @Transactional
     @Override
     public AuthResponse signupHandler(SignupRequest req) {
         //Validate
@@ -126,7 +128,7 @@ public class AuthServiceImpl implements AuthService {
         String avatarUrl = Optional.ofNullable(user.user().getAvatar()).flatMap(avatars -> avatars.stream()
                         .max(Comparator.comparing(Avatar::getCreatedAt))
                         .map(Avatar::getSource))
-                .orElse(null);
+                .orElse("/default_avatar.png");
 
         return AuthResponse
                 .builder()

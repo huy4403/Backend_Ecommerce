@@ -23,7 +23,7 @@ public class ProfileUserResponse {
         String avatarUrl = Optional.ofNullable(user.getAvatar()).flatMap(avatars -> avatars.stream()
                         .max(Comparator.comparing(Avatar::getCreatedAt))
                         .map(Avatar::getSource))
-                .orElse(null);
+                .orElse("/default_avatar");
 
         return ProfileUserResponse.builder()
                 .fullName(user.getFullName())

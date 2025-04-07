@@ -34,6 +34,7 @@ public class Product extends BaseEntity{
 
     private Long price;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private String brand;
