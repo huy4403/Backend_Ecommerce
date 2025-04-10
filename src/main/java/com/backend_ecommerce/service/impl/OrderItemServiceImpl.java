@@ -7,6 +7,7 @@ import com.backend_ecommerce.model.OrderItem;
 import com.backend_ecommerce.repository.CartItemRepository;
 import com.backend_ecommerce.repository.OrderItemRepository;
 import com.backend_ecommerce.service.OrderItemService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     private final CartItemRepository cartItemRepository;
 
     @Override
+    @Transactional
     public Long addOrderItem(CartItem cartItem, Order order) {
         OrderItem orderItem = new OrderItem();
         orderItem.setOrder(order);

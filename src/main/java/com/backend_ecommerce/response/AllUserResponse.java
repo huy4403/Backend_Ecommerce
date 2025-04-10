@@ -30,7 +30,7 @@ public class AllUserResponse {
         String avatarUrl = Optional.ofNullable(user.getAvatar()).flatMap(avatars -> avatars.stream()
                         .max(Comparator.comparing(Avatar::getCreatedAt))
                         .map(Avatar::getSource))
-                .orElse(null);
+                .orElse("/default_avatar");
 
         return AllUserResponse
                 .builder()

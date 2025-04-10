@@ -1,6 +1,7 @@
 package com.backend_ecommerce.response;
 
 import com.backend_ecommerce.domain.OrderStatus;
+import com.backend_ecommerce.domain.TransactionStatus;
 import com.backend_ecommerce.model.Order;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 public class UserOrdersResponse {
     private Long id;
     private OrderStatus orderStatus;
+    private TransactionStatus transactionStatus;
     private int totalItem;
     private Long totalPrice;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm dd-MM-yyyy")
@@ -25,6 +27,7 @@ public class UserOrdersResponse {
                 .builder()
                 .id(order.getId())
                 .orderStatus(order.getOrderStatus())
+                .transactionStatus(order.getTransaction().getStatus())
                 .totalItem(order.getTotalItem())
                 .totalPrice(order.getTotalPrice())
                 .orderDate(order.getOrderDate())

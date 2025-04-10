@@ -5,16 +5,14 @@ import com.backend_ecommerce.domain.PaymentMethod;
 import com.backend_ecommerce.domain.ProductStatus;
 import com.backend_ecommerce.dto.UserPrincipal;
 import com.backend_ecommerce.exception.BusinessException;
+import com.backend_ecommerce.exception.OrderException;
 import com.backend_ecommerce.exception.ProductException;
 import com.backend_ecommerce.exception.ResourceNotFoundException;
 import com.backend_ecommerce.model.*;
 import com.backend_ecommerce.repository.*;
 import com.backend_ecommerce.request.CreateOrderRequest;
 import com.backend_ecommerce.request.CreatePaymentRequest;
-import com.backend_ecommerce.response.CreateOrderResponse;
-import com.backend_ecommerce.response.OrderDetailResponse;
-import com.backend_ecommerce.response.OrderResponse;
-import com.backend_ecommerce.response.UserOrdersResponse;
+import com.backend_ecommerce.response.*;
 import com.backend_ecommerce.service.OrderItemService;
 import com.backend_ecommerce.service.OrderService;
 import com.backend_ecommerce.service.TransactionService;
@@ -47,33 +45,15 @@ public class OrderServiceImpl implements OrderService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-
         User currentUser = userPrincipal.user();
 
         Long cartId = userPrincipal.user().getCart().getId();
 
-        //Check cart item corresponding to the user
         if (cartId == null) throw new ResourceNotFoundException("Cart not found");
 
         Address address = addressRepository.findByIdAndUserId(req.getAddressId(), currentUser.getId()).orElseThrow(
                 () -> new ResourceNotFoundException("Address not found")
         );
-
-//        List<CartItem> cartItems = new ArrayList<>();
-//        int totalItem = 0;
-//        int totalPrice = 0;
-//        for (Long cartItemId : req.getCartItemIds()) {
-//
-//            CartItem cartItem = cartItemRepository.findByIdAndCartId(cartItemId, cartId).orElseThrow(()
-//                    -> new ResourceNotFoundException("Cart item id: " + cartItemId + " not found"));
-//
-//            if (cartItem.getQuantity() > cartItem.getProductVariant().getQuantity())
-//                throw new BusinessException("Cart id: " + cartItem.getId() + " has exceeded the stock quantity.");
-//            totalItem += cartItem.getQuantity();
-//            totalPrice += cartItem.getProductVariant().getProduct().getPrice() * cartItem.getQuantity();
-//            cartItems.add(cartItem);
-//        }
-//  -> Use stream
 
         List<CartItem> cartItems = req.getCartItemIds().stream()
                 .map(cartItemId -> cartItemRepository.findByIdAndCartId(cartItemId, cartId)
@@ -194,5 +174,28 @@ public class OrderServiceImpl implements OrderService {
         UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
         List<Order> orders = orderRepository.findAllByUser(userPrincipal.user());
         return orders.stream().map(UserOrdersResponse::mapFrom).collect(Collectors.toList());
+    }
+
+    @Override
+    public RePaymentResponse rePayment(Long id, HttpServletRequest httpServletRequest) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User currentUser = userPrincipal.user();
+        Order order = orderRepository.findByIdAndUser(id, currentUser).orElseThrow(
+                () -> new OrderException("Order not found")
+        );
+
+        CreatePaymentRequest createPaymentRequest = CreatePaymentRequest.builder()
+                .orderId(order.getId())
+                .amount(order.getTotalPrice())
+                .build();
+        String paymentUrl = paymentService.createPayment(httpServletRequest, createPaymentRequest);
+
+        return RePaymentResponse
+                .builder()
+                .orderId(order.getId())
+                .paymentUrl(paymentUrl)
+                .build();
+
     }
 }

@@ -9,6 +9,7 @@ import com.backend_ecommerce.model.User;
 import com.backend_ecommerce.repository.TransactionRepository;
 import com.backend_ecommerce.request.UpdateTransactionStatusRequest;
 import com.backend_ecommerce.service.TransactionService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
 
     @Override
+    @Transactional
     public Long createTransaction(PaymentMethod paymentMethod, User user, Order order) {
 
         Transaction transaction = Transaction

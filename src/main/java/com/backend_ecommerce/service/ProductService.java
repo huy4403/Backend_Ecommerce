@@ -28,4 +28,6 @@ public interface ProductService {
     List<ProductNewResponse> getNewProduct();
 
     List<FeaturedProductsResponse> getFeatured();
+
+    void deleteProductImage(Long id, String fileToRemove);
 }

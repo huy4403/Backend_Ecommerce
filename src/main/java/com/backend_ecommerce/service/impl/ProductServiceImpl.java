@@ -24,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -153,10 +154,11 @@ public class ProductServiceImpl implements ProductService {
 
             List<String> images = existProduct.getImages();
 
-            for (MultipartFile file : req.getFiles()) {
+            for(MultipartFile file : req.getFiles()) {
                 String source = cloudinaryService.uploadImage(file);
                 images.add(source);
             }
+
             existProduct.setImages(images);
         }
         return productRepository.save(existProduct).getId();
@@ -215,5 +217,36 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> topProducts = productRepository.findTopRatedProducts(PageRequest.of(0, 8, Sort.unsorted()));
         List<Product> products = topProducts.getContent();
         return products.stream().map(FeaturedProductsResponse::mapFrom).collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public void deleteProductImage(Long id, String fileToRemove) {
+        Product existProduct = productRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Product not found with id: " + id)
+        );
+        List<String> images = existProduct.getImages();
+
+        if(images.size() <= 1) {
+            throw new ResourceNotFoundException("Cannot delete the only image of the product");
+        }
+
+        if(!images.contains(fileToRemove)) {
+            throw new ProductException("Image not found");
+        }
+
+        try {
+            images.remove(fileToRemove);
+            existProduct.setImages(images);
+            productRepository.save(existProduct);
+
+            if(!cloudinaryService.deleteImage(fileToRemove)) {
+                throw new ProductException("Something went wrong while deleting image from cloudinary");
+            }
+        }
+        catch (Exception e) {
+            throw new ProductException("Something went wrong while deleting product");
+        }
+
     }
 }

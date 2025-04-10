@@ -28,11 +28,26 @@ public class EmailServiceImpl implements EmailService {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,"utf-8");
 
-
-            helper.setFrom(adminEmail, "DOAN HUY SHOP");
+            helper.setFrom(adminEmail, "ĐOÀN HUY ECOMMERCE");
             helper.setSubject(subject);
             helper.setText(text+otp, true);
             helper.setTo(userEmail);
+            javaMailSender.send(mimeMessage);
+        } catch (MailException | UnsupportedEncodingException e) {
+            throw new MailSendException("Failed to send email");
+        }
+    }
+
+    @Override
+    public void notification(String email, String subject, String text) throws MessagingException, MailSendException {
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,"utf-8");
+
+            helper.setFrom(adminEmail, "ĐOÀN HUY ECOMMERCE");
+            helper.setSubject(subject);
+            helper.setText(text, true);
+            helper.setTo(email);
             javaMailSender.send(mimeMessage);
         } catch (MailException | UnsupportedEncodingException e) {
             throw new MailSendException("Failed to send email");

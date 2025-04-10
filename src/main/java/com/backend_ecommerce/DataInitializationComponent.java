@@ -18,6 +18,7 @@ import java.util.List;
 public class DataInitializationComponent implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final CartRepository cartRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -35,5 +36,12 @@ public class DataInitializationComponent implements CommandLineRunner {
         users.add(admin);
 
         userRepository.saveAll(users);
+
+        admin.setId(1L);
+
+        Cart cart = new Cart();
+        cart.setUser(admin);
+
+        cartRepository.save(cart);
     }
 }

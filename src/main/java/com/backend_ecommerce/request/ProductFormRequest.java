@@ -12,6 +12,7 @@ import java.util.List;
 @Setter
 @Builder
 public class ProductFormRequest {
+
     private String title;
 
     private Long categoryId;
@@ -25,6 +26,5 @@ public class ProductFormRequest {
     private String brand;
 
     private List<MultipartFile> files = new ArrayList<>();
-
 
 }

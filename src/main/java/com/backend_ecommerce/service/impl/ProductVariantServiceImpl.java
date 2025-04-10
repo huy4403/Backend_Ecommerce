@@ -6,6 +6,7 @@ import com.backend_ecommerce.exception.ResourceNotFoundException;
 import com.backend_ecommerce.model.AttributeValue;
 import com.backend_ecommerce.model.Product;
 import com.backend_ecommerce.model.ProductVariant;
+import com.backend_ecommerce.repository.CartItemRepository;
 import com.backend_ecommerce.repository.ProductRepository;
 import com.backend_ecommerce.repository.ProductVariantRepository;
 import com.backend_ecommerce.request.AttributeValueRequest;
@@ -13,7 +14,9 @@ import com.backend_ecommerce.request.CreateProductVariantRequest;
 import com.backend_ecommerce.request.FindProductVariantRequest;
 import com.backend_ecommerce.response.VariantResponse;
 import com.backend_ecommerce.service.AttributeValueService;
+import com.backend_ecommerce.service.EmailService;
 import com.backend_ecommerce.service.ProductVariantService;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,8 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     private final AttributeValueService attributeValueService;
     private final ProductRepository productRepository;
     private final ProductVariantRepository productVariantRepository;
+    private final CartItemRepository cartItemRepository;
+    private final EmailService emailService;
 
     @Override
     @Transactional
@@ -82,9 +87,41 @@ public class ProductVariantServiceImpl implements ProductVariantService {
             throw new ProductException("Product variant quantity is less than or equal to zero");
         }
 
+        int oldQuantity = productVariant.getQuantity();
         productVariant.setQuantity(productVariant.getQuantity() + quantity);
 
-        return productVariantRepository.save(productVariant).getId();
+        Long variantId;
+        try {
+            variantId = productVariantRepository.save(productVariant).getId();
+        } catch (Exception e) {
+            throw new ProductException("Something went wrong...");
+        }
+
+        String subject = "Đã sẵn hàng đến từ DOAN HUY SHOP";
+        String text = "Sản phẩm " + productVariant.getProduct().getTitle() + " đã có có hàng";
+        List<String> emails = cartItemRepository.findAllUserEmailWantBuy(variantId, oldQuantity);
+        emails.forEach(email -> {
+            try {
+                emailService.notification(email, subject, text);
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return variantId;
+    }
+
+    @Override
+    public void descProductVariantQuantity(Long id, Integer quantity) {
+        ProductVariant productVariant = productVariantRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product variant not exist"));
+
+        if(quantity < 0 && Math.abs(quantity) > productVariant.getQuantity()) {
+            throw new ProductException("Product variant quantity is less than or equal to zero");
+        }
+
+        productVariant.setQuantity(productVariant.getQuantity() + quantity);
+        productVariantRepository.save(productVariant);
     }
 
     @Override

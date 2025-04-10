@@ -7,6 +7,8 @@ import com.backend_ecommerce.response.CreateProductResponse;
 import com.backend_ecommerce.response.ProductFillFormResponse;
 import com.backend_ecommerce.response.ProductManagementResponse;
 import com.backend_ecommerce.service.ProductService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +37,13 @@ public class AdminProductController {
     public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
         productService.deleteById(id);
         return ApiResponse.noContent("Delete product successfully");
+    }
+
+    @DeleteMapping("/{id}/image")
+    public ResponseEntity<?> deleteProductImage(@PathVariable("id") Long id,
+                                                @RequestParam("fileToRemove") @NotBlank(message = "Image not blank") String fileToRemove) {
+        productService.deleteProductImage(id, fileToRemove);
+        return ApiResponse.noContent("Delete product image successfully");
     }
 
     @PutMapping("/{id}/active")

@@ -113,7 +113,7 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
     //For delete
     private String extractPublicId(String imageUrl) {
-        Pattern pattern = Pattern.compile("/upload/v\\d+/(.*)\\.");
+        Pattern pattern = Pattern.compile("/upload/(.*)\\.");
         Matcher matcher = pattern.matcher(imageUrl);
         return matcher.find() ? matcher.group(1) : null;
     }

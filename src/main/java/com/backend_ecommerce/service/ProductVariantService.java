@@ -21,4 +21,5 @@ public interface ProductVariantService {
 
     void activeProductVariant(Long id);
 
+    void descProductVariantQuantity(Long id, Integer quantity);
 }

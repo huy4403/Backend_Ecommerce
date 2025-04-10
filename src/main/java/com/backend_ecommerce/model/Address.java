@@ -20,6 +20,7 @@ public class Address extends BaseEntity {
 
     private String mobile;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String address;
 
     private String description;

@@ -11,4 +11,5 @@ public interface EmailService {
                                   String text)
             throws MessagingException, MailSendException;
 
+    void notification(String email, String subject, String text) throws MessagingException, MailSendException;
 }
