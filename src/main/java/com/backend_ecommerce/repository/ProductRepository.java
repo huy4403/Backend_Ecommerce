@@ -19,7 +19,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
             "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
             "AND p.status = :productStatus " +
-            "AND (:title IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :title, '%')))")
+            "AND (:title IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :title, '%'))) " +
+            "OR (:title IS NULL OR LOWER(p.brand) LIKE LOWER(CONCAT('%', :title, '%')))")
     Page<Product> filterProduct(@Param("title") String title,
                                 @Param("categoryName") String categoryName,
                                 @Param("minPrice") Integer minPrice,
@@ -31,7 +32,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "(:minPrice IS NULL OR p.price >= :minPrice) " +
             "AND (:category IS NULL OR LOWER(p.category.name) LIKE LOWER(CONCAT('%', :category, '%'))) " +
             "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
-            "AND (:title IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :title, '%')))")
+            "AND (:title IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :title, '%'))) " +
+            "OR (:title IS NULL OR LOWER(p.brand) LIKE LOWER(CONCAT('%', :title, '%')))")
     Page<Product> findProductManagement(@Param("title") String title,
                                 @Param("category") String category,
                                 @Param("minPrice") Integer minPrice,

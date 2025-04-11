@@ -12,9 +12,11 @@ import java.util.List;
 @Setter
 @Getter
 @Builder
-public class ReviewResponse {
+public class AdminReviewsResponse {
     private Long id;
     private String user;
+    private Long productId;
+    private String product;
     private double rating;
     private String comment;
     private List<String> images;
@@ -23,7 +25,7 @@ public class ReviewResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm dd-MM-yyyy")
     private LocalDateTime date;
 
-    public static ReviewResponse mapFromReview(Review review) {
+    public static AdminReviewsResponse mapFromReview(Review review) {
 
         ReplyResponse reply = null;
 
@@ -34,10 +36,12 @@ public class ReviewResponse {
                     .build();
         }
 
-        return ReviewResponse
+        return AdminReviewsResponse
                 .builder()
                 .id(review.getId())
                 .user(review.getName())
+                .productId(review.getProduct().getId())
+                .product(review.getProduct().getTitle())
                 .rating(review.getRating())
                 .comment(review.getReviewText())
                 .date(review.getCreatedAt())

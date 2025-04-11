@@ -1,10 +1,10 @@
 package com.backend_ecommerce.model;
 
+import com.backend_ecommerce.domain.ReviewStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -14,7 +14,6 @@ import java.util.List;
 @Entity
 @Builder
 public class Review extends BaseEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,5 +38,12 @@ public class Review extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private ReviewStatus status = ReviewStatus.VALID;
+
+    @OneToOne(mappedBy = "review", orphanRemoval = true, cascade = CascadeType.ALL)
+    private ReviewReply reply;
 
 }

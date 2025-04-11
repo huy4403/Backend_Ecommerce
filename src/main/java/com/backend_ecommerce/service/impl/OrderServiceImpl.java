@@ -122,20 +122,22 @@ public class OrderServiceImpl implements OrderService {
 
         OrderStatus oldStatus = order.getOrderStatus();
 
-        if(orderStatus.equals(OrderStatus.DELIVERED)) {
-            order.getOrderItems().forEach(orderItem -> {
-                ProductVariant product = orderItem.getProductVariant();
-                if(product.getQuantity() > orderItem.getQuantity()) {
-                    productVariantRepository.decreaseStock(product.getId(), orderItem.getQuantity());
-                } else {
-                    throw new IllegalArgumentException("Số lượng hàng không đủ để xác nhận đơn hàng!");
-                }
-            });
-        } else if(oldStatus.equals(OrderStatus.DELIVERED)) {
+        if(order.getTransaction().getPaymentMethod().equals(PaymentMethod.COD)) {
+            if(orderStatus.equals(OrderStatus.DELIVERED)) {
+                order.getOrderItems().forEach(orderItem -> {
+                    ProductVariant product = orderItem.getProductVariant();
+                    if(product.getQuantity() > orderItem.getQuantity()) {
+                        productVariantRepository.decreaseStock(product.getId(), orderItem.getQuantity());
+                    } else {
+                        throw new IllegalArgumentException("Số lượng hàng không đủ để xác nhận đơn hàng!");
+                    }
+                });
+            } else if(oldStatus.equals(OrderStatus.DELIVERED)) {
                 order.getOrderItems().forEach(orderItem -> {
                     ProductVariant product = orderItem.getProductVariant();
                     productVariantRepository.increaseStock(product.getId(), orderItem.getQuantity());
                 });
+            }
         }
         order.setOrderStatus(orderStatus);
         return orderRepository.save(order).getId();
