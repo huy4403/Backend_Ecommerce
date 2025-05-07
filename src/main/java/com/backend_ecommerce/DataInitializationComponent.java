@@ -9,11 +9,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
-//@Component
+@Component
 @RequiredArgsConstructor
 public class DataInitializationComponent implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
@@ -26,22 +24,21 @@ public class DataInitializationComponent implements CommandLineRunner {
     }
 
     private void initializeUser() {
-        List<User> users = new ArrayList<>();
-        User admin = new User();
-        admin.setFullName("Doan Huy");
-        admin.setEmail("huy4403nd@gmail.com");
-        admin.setPassword(passwordEncoder.encode("4403"));
-        admin.setRole(ROLE_NAME.ADMIN);
-        admin.setAccountStatus(AccountStatus.ACTIVE);
-        users.add(admin);
+        Optional<User> adm = userRepository.findByRole(ROLE_NAME.ADMIN);
+        if(adm.isEmpty()) {
+            User admin = new User();
+            admin.setFullName("Doan Huy");
+            admin.setEmail("huy4403nd@gmail.com");
+            admin.setPassword(passwordEncoder.encode("4403"));
+            admin.setRole(ROLE_NAME.ADMIN);
+            admin.setAccountStatus(AccountStatus.ACTIVE);
 
-        userRepository.saveAll(users);
+            admin.setId(userRepository.save(admin).getId());
 
-        admin.setId(1L);
+            Cart cart = new Cart();
+            cart.setUser(admin);
 
-        Cart cart = new Cart();
-        cart.setUser(admin);
-
-        cartRepository.save(cart);
+            cartRepository.save(cart);
+        }
     }
 }
