@@ -4,6 +4,7 @@ import com.backend_ecommerce.request.*;
 import com.backend_ecommerce.response.ApiResponse;
 import com.backend_ecommerce.response.AuthResponse;
 import com.backend_ecommerce.service.AuthService;
+import com.backend_ecommerce.service.TokenService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final TokenService tokenService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest req) {
@@ -51,5 +53,14 @@ public class AuthController {
     public ResponseEntity<?> updatePassword(@RequestBody UpdatePasswordWithOtpRequest req) {
         String message = authService.updatePasswordWithOtp(req);
         return ApiResponse.accepted(message);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
+        if(authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            tokenService.revokeToken(token);
+        }
+        return ResponseEntity.ok("Logged out successfully");
     }
 }

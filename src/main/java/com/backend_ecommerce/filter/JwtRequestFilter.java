@@ -1,5 +1,6 @@
 package com.backend_ecommerce.filter;
 
+import com.backend_ecommerce.service.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.backend_ecommerce.config.JwtProvider;
 import com.backend_ecommerce.dto.UserPrincipal;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,6 +34,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
     private final UserDetailsService userDetailsService;
+    private final TokenService tokenService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -46,6 +49,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             //Sub 'Bearer ' to get token
             String token = header.substring(7);
+
+            if (tokenService.isTokenRevoked(token)) {
+                handleException(response, "Token has been revoked. Please login again.");
+                return;
+            }
 
             //Get user information from token
             String email = jwtProvider.getEmailFromToken(token);
